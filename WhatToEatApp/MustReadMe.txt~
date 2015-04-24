@@ -5,18 +5,12 @@ pip3 install Flask
 pip3 install flask-sqlalchemy
 4. Do not commit __pycache__ folders  
 
-5. The script that you need to run in Python3.4 shell to create the db models:
+5. First run the python script for db_activation. You might receive an error, open up the main_logic file and 
+comment out #import models, then run db_activation again. Do not forget to uncomment the #import models,
+you should have a .db file in the folder, or somewhere
+on the desktop.
 
-from main_logic import db
-from models import User
-db.create_all()
-
-After that you will see a file that ends in .db extension, you could download
-a SQLite Database Browser GUI that could help you visualize the tables better.
-
-I am not sure if the file will be in the same folder, or on the Destkop.
-
-This is the DB model at that point, so most likely its going to change.
+You could download a SQLite Database Browser GUI that could help you visualize the tables better.
 
 6. Creating an object that will be stored in our DB is just like creating a 
 normal python object. Example:

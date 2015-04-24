@@ -4,7 +4,6 @@ from flask import Flask, render_template, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from validation import Validation
 
-
 #determine the absolute path to the current python file
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,13 +25,17 @@ def signin():
     if request.method == "POST":
         un = request.form["username"]
         password = request.form["password"]
-        #to do
+        
+        #if the user is in the db and the passwords match you could make a render_template()
+
+        #else show him appropriate message
 
     # get request for signin
     return render_template("signin.html")
 
 @app.route("/about")
 def about():
+    flash('pesho')
     return render_template("about.html")
 
 @app.route("/signup", methods=["GET", "POST"])
