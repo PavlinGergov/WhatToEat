@@ -1,0 +1,62 @@
+import os
+import models
+from flask import Flask, render_template, url_for, request, flash
+from flask_sqlalchemy import SQLAlchemy
+from validation import Validation
+
+
+#determine the absolute path to the current python file
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app = Flask(__name__)
+#congifuration of the path to the database = 'sqlite:///path/to/database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tables.db')
+# We need a secret to use flash, but I am not sure how to make it to work
+app.config['SECRET_KEY'] = "neshto si"
+db = SQLAlchemy(app)
+
+@app.route("/")
+@app.route("/index")
+def index():
+    return render_template("index.html")
+
+@app.route("/signin", methods=["GET", "POST"])
+def signin():
+    error = None
+    if request.method == "POST":
+        un = request.form["username"]
+        password = request.form["password"]
+        #to do
+
+    # get request for signin
+    return render_template("signin.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        un = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        v = Validation()
+        if v.check_validation(un, email, password):
+            #put the user in the db
+             u = models.User(username = un, email = email, password = password)
+             db.session.add(u)
+             db.session.commit()
+             # render the template where the user is logged in 
+             return render_template("user_logged.html")
+        else:
+            #validation did not succeed, showing the user a flash message
+            flash("Sorry, but some of your input is not enough secured")
+            return render_template("signup.html")
+
+    #get request for signup
+    return render_template("signup.html")
+
+if __name__ == '__main__':
+    app.run(debug=True)

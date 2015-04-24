@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block links %}
+
+ <li><a href="{{url_for('index')}}">Home</a></li>
+
+ <li><a href="{{url_for('about')}}">About</a></li>
+                  
+{% endblock %}
+ 
+
+{% block form %}
+<form id='register' action="" method='post'
+            accept-charset='UTF-8'> 
+    <label for='name' >Your Full Name*: </label>
+    <br/>
+    <input type='text' name='name' id='name' maxlength="50" required='true' />
+
+    <br/>
+    <label for='email' >Email Address*:</label>
+    <br/>
+
+    <input type='text' name='email' id='email' maxlength="50" required='true'/>
+    <br/>
+    <label for='username' >UserName*:</label>
+    <br/>
+    <input type='text' name='username' id='username' maxlength="50" required='true' />
+
+    <br/>
+    <label for='password' >Password*:</label>
+    <br/>
+    <input type='password' name='password' id='password' maxlength="50" required='true'/>
+    <br/>
+    <input type='submit' name='Submit' value='Submit' />
+ 
+
+        </form>
+ 
+{% endblock %}
