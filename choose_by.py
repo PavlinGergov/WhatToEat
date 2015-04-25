@@ -2,33 +2,6 @@ import json
 from operator import itemgetter
 
 
-class ChooseBy:
-
-    def __init__(self, recipes, healthy=None, time=None, difficulty=None):
-
-        # the class takes one argument:recipes - a list with the suggested
-        # recipes, after we did some search (by default, favourite etc..)
-        # the sort type must be choosed (healthy=True)
-
-        self.recipes = recipes
-        self.healthy = healthy
-        self.time = time
-        self.difficulty = difficulty
-
-    def sort_by_time(self):
-        # we have a time tag, simple sort is needed
-        pass
-
-    def sort_by_difficulty(self):
-        # we have a difficulty tag, simple sort needed
-        pass
-
-    def sort_by_healthy(self):
-        # Необходим е алгоритъм за здравословност, съотношение между
-        # въглехидрати, белтъци и мазнини в 100 грама!!!! от ястието
-        pass
-
-
 # Function for listing the available products
 # We are gona make a request to the produtcs database and return the products
 def check_available_products():
@@ -48,35 +21,9 @@ def suggested_for_today():
     pass
 
 
-# We are gona return the favourite (most cooked) recipes
-# by the times_cooked tag
-def get_favourite_recipes():
-    pass
-
-
-# We are gona return 5 recipes that were most recently cooked
-# by the date_cooked tag (in the log we have the last recipes)
-def get_recent_recipes():
-    pass
-
-
 # We should be able to add a recipe following the original recipies format
 # If we do not have all the fields filled, we should raise an error
-def add_recipe():
-    pass
-
-
-# We are gona search the recipe database for an exact recipe
-# Show all recipes that have the searched string:
-# find: eggs with ham -> Eggs with ham and cheese, Eggs with smoked ham
-def find_recipe():
-    pass
-
-
-# Show the ingredients(products) of the recipe
-# after each product we should have: available tag -> True/False
-# if we need 5 eggs and we have 4 -> avaiable(eggs) -> False
-def is_available():
+def add_recipie():
     pass
 
 
@@ -95,7 +42,18 @@ def list_ingredients():
 def buy_product():
     pass
 
-# new day new start
+# We are gona search the recipe database for an exact recipe
+# Show all recipes that have the searched string:
+# find: eggs with ham -> Eggs with ham and cheese, Eggs with smoked ham
+def find_recipe(name):
+    with open("recipies.json", "r") as f:
+        result = []
+        contents = f.read()
+        recipies = json.loads(contents)
+        for recipe in recipies:
+            if name in recipe["name"]:
+                result.append(recipe)
+        return result
 
 
 # returning a list of all recipies for wich we have sufficient products
@@ -145,6 +103,11 @@ def sort_by_calories():
     return sorted(possible_recipies, key=itemgetter('calories_for_portion'))
 
 
+def sort_by_healthy():
+    possible_recipies = make_list_of_possible_recipies()
+    return sorted(possible_recipies, key=itemgetter('healthy'))
+
+
 # @param recipie must be a valid recipie dictionary
 # Cook means that we've cooked the chosen recipe
 # Increase the times_cooked tag with 1
@@ -177,3 +140,44 @@ def cook(recipie_to_cook):
 
     with open("recipies.json", "w") as p:
         json.dump(recipies, p, indent=True, ensure_ascii=False)
+
+
+# We are gona return 5 recipies that were most recently cooked
+def get_recent_recipies():
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+
+    return lst[1]
+
+
+# We are gona return the favourite (most cooked) recipies
+def get_favourite_recipies():
+    with open("recipies.json", "r") as p:
+        contents = p.read()
+        recipies = json.loads(contents)
+
+    most_cooked_recipie = {"times cooked": -1}
+
+    for recipie in recipies:
+        if most_cooked_recipie["times cooked"] <= recipie["times cooked"]:
+            most_cooked_recipie = recipie
+
+    return most_cooked_recipie
+
+
+# Show the ingredients(products) of the recipie
+# after each product we should have: available tag -> True/False
+# if we need 5 eggs and we have 4 -> avaiable(eggs) -> False
+def is_available(recipie):
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+
+    for product in recipie["products"].keys():
+        if product not in lst[0].keys():
+            return False
+        if recipie["products"][product] > lst[0][product]:
+            return False
+
+    return True
