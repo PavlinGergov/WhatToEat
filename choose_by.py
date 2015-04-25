@@ -1,3 +1,7 @@
+import json
+from operator import itemgetter
+
+
 class ChooseBy:
 
     def __init__(self, recipes, healthy=None, time=None, difficulty=None):
@@ -34,14 +38,6 @@ def check_available_products():
     # "count": 2,
     # "amount": 130  # grams
     # }
-    pass
-
-
-# Cook means that we've cooked the chosen recipe
-# Increase the times_cooked tag with 1
-# Add date and time to the log(the log contains the recipes we've coked so far)
-# Изваждаме продуктите от базата с продукти на хладилника
-def cook():
     pass
 
 
@@ -98,3 +94,86 @@ def list_ingredients():
 # This should display some markets, delivery time, etc (this is about to be discussed)
 def buy_product():
     pass
+
+# new day new start
+
+
+# returning a list of all recipies for wich we have sufficient products
+def make_list_of_possible_recipies():
+    possible_recipies = []
+
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+        products = lst[0]
+
+    with open("recipies.json", "r") as p:
+        contents = p.read()
+        recipies = json.loads(contents)
+
+    for rec in recipies:
+        is_possible = True
+        for needed_product in rec["products"].keys():
+            if needed_product not in products.keys():
+                is_possible = False
+                break
+            elif rec["products"][needed_product] > products[needed_product]:
+                is_possible = False
+                break
+
+        if is_possible:
+            possible_recipies.append(rec)
+
+    return possible_recipies
+
+
+# sorting the possible recipies by time
+def sort_by_time():
+    possible_recipies = make_list_of_possible_recipies()
+    return sorted(possible_recipies, key=itemgetter('time'))
+
+
+# sorting the possible recipies by difficulty
+def sort_by_difficulty():
+    possible_recipies = make_list_of_possible_recipies()
+    return sorted(possible_recipies, key=itemgetter('difficulty'))
+
+
+# sorting the possible recipies by calories
+def sort_by_calories():
+    possible_recipies = make_list_of_possible_recipies()
+    return sorted(possible_recipies, key=itemgetter('calories_for_portion'))
+
+
+# @param recipie must be a valid recipie dictionary
+# Cook means that we've cooked the chosen recipe
+# Increase the times_cooked tag with 1
+# Add date and time to the log(the log contains the recipes we've coked so far)
+# Изваждаме продуктите от базата с продукти на хладилника
+def cook(recipie_to_cook):
+
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+
+    with open("recipies.json", "r") as p:
+        contents = p.read()
+        recipies = json.loads(contents)
+
+    for product in recipie_to_cook["products"].keys():
+        if product in lst[0].keys():
+            lst[0][product] -= recipie_to_cook["products"][product]
+
+    lst[1].insert(0, recipie_to_cook)
+    if len(lst[1]) > 5:
+        lst[1].pop()
+
+    for recipie in recipies:
+        if recipie_to_cook["id"] == recipie["id"]:
+            recipie["times cooked"] += 1
+
+    with open("user.json", "w") as f:
+        json.dump(lst, f, indent=True)
+
+    with open("recipies.json", "w") as p:
+        json.dump(recipies, p, indent=True)
