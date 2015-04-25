@@ -1,0 +1,23 @@
+user = [
+		{
+			"name": "Gosho",
+			"weight": 80,
+			"height": 1.89,
+			"age": 25,
+			"gender": "M",
+		}
+		{
+			"name": "Rado",
+			"weight": 70,
+			"height": 1.79,
+			"age": 26,
+			"gender": "M",
+		}
+		{
+			"name": "Ivo",
+			"weight": 90,
+			"height": 1.85,
+			"age": 23,
+			"gender": "M",
+		}
+	   ]
