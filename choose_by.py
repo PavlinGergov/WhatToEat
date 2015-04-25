@@ -173,7 +173,7 @@ def cook(recipie_to_cook):
             recipie["times cooked"] += 1
 
     with open("user.json", "w") as f:
-        json.dump(lst, f, indent=True)
+        json.dump(lst, f, indent=True, ensure_ascii=False)
 
     with open("recipies.json", "w") as p:
-        json.dump(recipies, p, indent=True)
+        json.dump(recipies, p, indent=True, ensure_ascii=False)
