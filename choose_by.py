@@ -2,22 +2,16 @@ import json
 from operator import itemgetter
 
 
-# Function for listing the available products
-# We are gona make a request to the produtcs database and return the products
-def check_available_products():
-    # sample return:
-    # {
-    # "name": "apple",
-    # "count": 2,
-    # "amount": 130  # grams
-    # }
-    pass
-
-
 # Suggest recipes for today
 # Take in consideration the last cooked meals
 # we should NOT eat the same things every day
 def suggested_for_today():
+    pass
+
+
+# We should have an option to buy the missing product/products using a drone!!
+# This should display some markets, delivery time, etc (this is about to be discussed)
+def buy_product():
     pass
 
 
@@ -28,19 +22,13 @@ def add_recipie():
 
 
 # Use the upper function to generate the proper return
-def list_ingredients():
-    # Sample output: Feel free to implement as you wish
-    # {
-    # "eggs - x4": "available",
-    # "milk - 0.4 l": "not available"
-    # }
-    pass
+def check_fridge():
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+        products = lst[0]
+    return products
 
-
-# We should have an option to buy the missing product/products using a drone!!
-# This should display some markets, delivery time, etc (this is about to be discussed)
-def buy_product():
-    pass
 
 # We are gona search the recipe database for an exact recipe
 # Show all recipes that have the searched string:
