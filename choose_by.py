@@ -15,19 +15,6 @@ class ChooseBy:
         self.time = time
         self.difficulty = difficulty
 
-    def sort_by_time(self):
-        # we have a time tag, simple sort is needed
-        pass
-
-    def sort_by_difficulty(self):
-        # we have a difficulty tag, simple sort needed
-        pass
-
-    def sort_by_healthy(self):
-        # Необходим е алгоритъм за здравословност, съотношение между
-        # въглехидрати, белтъци и мазнини в 100 грама!!!! от ястието
-        pass
-
 
 # Function for listing the available products
 # We are gona make a request to the produtcs database and return the products
@@ -69,15 +56,15 @@ def add_recipe():
 # We are gona search the recipe database for an exact recipe
 # Show all recipes that have the searched string:
 # find: eggs with ham -> Eggs with ham and cheese, Eggs with smoked ham
-def find_recipe():
-    pass
-
-
-# Show the ingredients(products) of the recipe
-# after each product we should have: available tag -> True/False
-# if we need 5 eggs and we have 4 -> avaiable(eggs) -> False
-def is_available():
-    pass
+def find_recipe(name):
+    with open("recipies.json", "r") as f:
+        result = []
+        contents = f.read()
+        recipies = json.loads(contents)
+        for recipe in recipies:
+            if name in recipe["name"]:
+                result.append(recipe)
+        return result
 
 
 # Use the upper function to generate the proper return
@@ -139,10 +126,9 @@ def sort_by_difficulty():
     return sorted(possible_recipies, key=itemgetter('difficulty'))
 
 
-# sorting the possible recipies by calories
-def sort_by_calories():
+def sort_by_healthy():
     possible_recipies = make_list_of_possible_recipies()
-    return sorted(possible_recipies, key=itemgetter('calories_for_portion'))
+    return sorted(possible_recipies, key=itemgetter('healthy'))
 
 
 # @param recipie must be a valid recipie dictionary
