@@ -61,5 +61,17 @@ def signup():
     #get request for signup
     return render_template("signup.html")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    #import os
+#import sys
+#
+#path = '/home/bgvladedivac/path/to/flask_app_directory'
+#if path not in sys.path:
+#    sys.path.append(path)
+#
+#from main_flask_app_file import app as application
+#
+# NB -- many Flask guides suggest you use a file called run.py; that's
+# not necessary on PythonAnywhere.  And you should make sure your code
+# does *not* invoke the flask development server with app.run(), as it
+# will prevent your wsgi file from working.subl
+
