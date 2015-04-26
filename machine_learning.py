@@ -87,11 +87,11 @@ def get_suggested(last_cooked):
     dist, indices = near.kneighbors(tfidf_matrix[index])
     title_result = [titles[index] for index in indices[0]]
     instructions_result = [instructions[index] for index in indices[0]]
+    data = {}
     for i in range(len(title_result)):
-        if i != 0:
-            print("\nNew recipe: {}\n{}".format(title_result[i], instructions_result[i]))
-        else:
-            print("\nLast recipe: {}\n{}".format(title_result[i], instructions_result[i]))
+        data[i] = [title_result[i], instructions_result[i]]
+    with open("suggested_recipe.json", 'w') as f:
+        json.dump(data, f, indent=True, ensure_ascii=False)
     # print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
     # print(''.join([titles[index] for index in indices[0]]))
-# get_suggested("Гювеч с телешко и зеленчуци")
+# get_suggested("Панирано пилешко вретено със сусам")
