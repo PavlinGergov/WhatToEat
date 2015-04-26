@@ -1,17 +1,11 @@
 import json
 from operator import itemgetter
+from machine_learning import get_suggested
 
 
 # Suggest recipes for today
 # Take in consideration the last cooked meals
 # we should NOT eat the same things every day
-def suggested_for_today():
-    suggested_list = []
-    suggested_list.append(sort_by_time()[0])
-    suggested_list.append(sort_by_healthy()[0])
-    suggested_list.append()#machine)
-
-    return json.dumps(suggested_list, indent=True, ensure_ascii=False)
 
 
 # We should have an option to buy the missing product/products using a drone!!
@@ -196,5 +190,15 @@ def is_available(product, quantity):
         return json.dumps(False, indent=True)
 
     return json.dumps(True, indent=True)
+
+
+def suggested_for_today():
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+        result = lst[1][0]["name"]
+    get_suggested(result)
+
+suggested_for_today()
 
 # print(is_available("lemon", 2))
