@@ -6,18 +6,34 @@ from operator import itemgetter
 # Take in consideration the last cooked meals
 # we should NOT eat the same things every day
 def suggested_for_today():
-    pass
+    suggested_list = []
+    suggested_list.append(sort_by_time()[0])
+    suggested_list.append(sort_by_healthy()[0])
+    suggested_list.append()#machine)
+
+    return json.dumps(suggested_list, indent=True, ensure_ascii=False)
 
 
 # We should have an option to buy the missing product/products using a drone!!
 # This should display some markets, delivery time, etc
 # (this is about to be discussed)
-def buy_product():
-    pass
+def buy_product(product_name, quantity):
+    with open("user.json", "r") as f:
+        contents = f.read()
+        lst = json.loads(contents)
+        if product_name not in lst[0].keys():
+            lst[0][product_name] = quantity
+        else:
+            lst[0][product_name] += quantity
+    with open("user.json", "w") as f:
+        json.dump(lst, f, indent=True, ensure_ascii=False)
 
 
+print(buy_product("banana", 2))
 # We should be able to add a recipe following the original recipes format
 # If we do not have all the fields filled, we should raise an error
+
+
 def add_recipe():
     pass
 
@@ -34,17 +50,21 @@ def check_fridge():
 # We are gona search the recipe database for an exact recipe
 # Show all recipes that have the searched string:
 # find: eggs with ham -> Eggs with ham and cheese, Eggs with smoked ham
-def find_recipe(name):
+def find_recipe(keyword):
     with open("recipes.json", "r") as f:
         result = []
         contents = f.read()
         recipes = json.loads(contents)
         for recipe in recipes:
-            if name in recipe["name"]:
-                result.append(recipe["name"])
-                result.append(recipe["way_of_prepare"])
+            if keyword in recipe["name"]:
+                result.append(recipe)
+                continue
+            elif keyword in recipe["products"].keys():
+                result.append(recipe)
+                continue
+                # result.append(recipe["way_of_prepare"])
         return json.dumps(result, indent=True, ensure_ascii=False)
-# print(find_recipe("Огретен с тиквички и сирене"))
+# print(find_recipe("сирене")
 
 
 # returning a list of all recipes for wich we have sufficient products
