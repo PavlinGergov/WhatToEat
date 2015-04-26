@@ -10,7 +10,7 @@ from sklearn.externals import joblib
 # import nltk
 # import re
 # import os
-# import codecs 
+# import codecs
 # from sklearn import feature_extraction
 # import mpld3
 
@@ -61,6 +61,7 @@ def get_suggested(last_cooked):
 
     instructions = [item['instructions'] for item in content]
     titles = [item["title"] for item in content]
+    ingredients = [item["ingredients"] for item in content]
     tfidf_matrix = tfidf_vectorizer.fit_transform(instructions)
 
     num_clusters = 100
@@ -87,9 +88,10 @@ def get_suggested(last_cooked):
     dist, indices = near.kneighbors(tfidf_matrix[index])
     title_result = [titles[index] for index in indices[0]]
     instructions_result = [instructions[index] for index in indices[0]]
+    ingredients_result = [ingredients[index] for index in indices[0]]
     data = {}
     for i in range(1, len(title_result)):
-        data[i] = [title_result[i], instructions_result[i]]
+        data[i] = [title_result[i], ingredients_result[i], instructions_result[i]]
     with open("suggested_recipe.json", 'w') as f:
         json.dump(data, f, indent=True, ensure_ascii=False)
     # print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
