@@ -14,6 +14,13 @@ from sklearn.externals import joblib
 # from sklearn import feature_extraction
 # import mpld3
 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from sklearn.decomposition import PCA
+
+import random
+r = lambda: random.randint(0,255)
+
 
 def instructions_split(instructions):  # tokenize
     instructions = instructions.lower()
@@ -50,7 +57,7 @@ stop_words = ['без', 'бърка', 'веднага', 'вкус', 'вода', 
 'поставя', 'поставят', 'почиства', 'предварително', 'преди', 'през', 'пресен', 'при', 'прибавя',
 'прибавят', 'приготвя', 'продуктите', 'пълна', 'разбиват', 'разбитите', 'разбърква', 'разбъркват',
 'сгъсти', 'сервира', 'сервират', 'ситно', 'слага', 'слагат', 'след', 'според', 'стане', 'старателно',
-'страна', 'страни', 'студена', 'със', 'също', 'тази', 'така', 'течността', 'час', 'часа', 'част', 'щом']
+'страна', 'страни', 'студена', 'със', 'също', 'тази', 'така', 'течността', 'час', 'часа', 'част', 'щом', 'ястието']
 
 def get_suggested(last_cooked):
     with open('all_recepies.json', 'r') as f:
@@ -63,7 +70,7 @@ def get_suggested(last_cooked):
     titles = [item["title"] for item in content]
     tfidf_matrix = tfidf_vectorizer.fit_transform(instructions)
 
-    num_clusters = 100
+    num_clusters = 10
 
     km = KMeans(n_clusters=num_clusters)
 
@@ -71,11 +78,18 @@ def get_suggested(last_cooked):
 
     clusters = km.labels_.tolist()
 
+    names = tfidf_vectorizer.get_feature_names()
+    order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+    # for index in order_centroids[15, :6]:
+    #     print('Top dimension ' + str(index) + ': ' + names[index])
+
 
     # print(tfidf_matrix.shape)
     # print(tfidf_vectorizer.get_feature_names())
     # print(len(clusters))
     # print('\nNew recipe:'.join([item[0] for item in zip(instructions, clusters) if item[-1] == 15]))
+    # print('\nNew recipe:'.join([item[0] for item in zip(titles, clusters) if item[-1] == 15]))
+
 
     for i in range(len(content)):
         if content[i]["title"] == last_cooked:
@@ -92,6 +106,20 @@ def get_suggested(last_cooked):
         data[i] = [title_result[i], instructions_result[i]]
     with open("suggested_recipe.json", 'w') as f:
         json.dump(data, f, indent=True, ensure_ascii=False)
+
+    pca = PCA(n_components=2)
+    pca.fit(tfidf_matrix.toarray())
+
+    recipes_2d = pca.transform(tfidf_matrix.toarray())
+    fig = plt.figure()
+    xs, ys = recipes_2d[:, 0], recipes_2d[:, 1]
+    cluster_colors = ['#%02X%02X%02X' % (r(),r(),r()) for i in range(len(clusters))]
+    colors = [cluster_colors[cluster_index] for cluster_index in clusters]
+    ax = fig.add_subplot(1, 1, 1)
+    plt.scatter(xs, ys, c=colors)
+    for t in zip(xs, ys, titles):
+        ax.annotate('$%s$' % t[-1], xy=(t[0], t[1]), textcoords='offset points')
+    plt.show()
     # print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
     # print(''.join([titles[index] for index in indices[0]]))
-get_suggested("Панирано пилешко вретено със сусам")
+get_suggested("Панирани пилешки флейки")
