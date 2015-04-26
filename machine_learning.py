@@ -1,33 +1,30 @@
+from __future__ import print_function
 import string
 import json
-import sklearn
-import nltk
-import re
-import os
-import codecs
-from sklearn import feature_extraction
 from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
-
+from sklearn.externals import joblib
+# import numpy as np
+# import sklearn
+# import nltk
+# import re
+# import os
+# import codecs 
+# from sklearn import feature_extraction
 # import mpld3
 
 
 def instructions_split(instructions):  # tokenize
     instructions = instructions.lower()
-    # letters = 'абвгдежзийклмнопрстуфхцчшщъьюя'
     instructions = instructions.split()
     instructions = [word.strip(string.punctuation) for word in instructions]
     instructions = [word for word in instructions if word.isalpha() and len(word) > 2]
-
     return instructions
 
 
 def to_words(a_file):
-
     result = set()
-
     with open(a_file, 'r') as f:
         content = json.loads(f.read())
     for recipe in content:
@@ -37,7 +34,6 @@ def to_words(a_file):
                 result.add(word)
     return list(result)
 
-print(len(to_words('all_recepies.json')))
 
 stop_words = ['без', 'бърка', 'веднага', 'вкус', 'вода', 'водата', 'време', 'връзка',
 'всички', 'всичко', 'всяка', 'във', 'върху', 'гарнитура', 'глава', 'глави', 'готви', 'готовност',
@@ -56,33 +52,46 @@ stop_words = ['без', 'бърка', 'веднага', 'вкус', 'вода', 
 'сгъсти', 'сервира', 'сервират', 'ситно', 'слага', 'слагат', 'след', 'според', 'стане', 'старателно',
 'страна', 'страни', 'студена', 'със', 'също', 'тази', 'така', 'течността', 'час', 'часа', 'част', 'щом']
 
+def get_suggested(last_cooked):
+    with open('all_recepies.json', 'r') as f:
+        content = json.loads(f.read())
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
+                                     min_df=0.05, stop_words=stop_words,
+                                     use_idf=True, tokenizer=instructions_split)
 
-with open('all_recepies.json', 'r') as f:
-    content = json.loads(f.read())
-tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
-                                 min_df=0.05, stop_words=stop_words,
-                                 use_idf=True, tokenizer=instructions_split)
+    instructions = [item['instructions'] for item in content]
+    titles = [item["title"] for item in content]
+    tfidf_matrix = tfidf_vectorizer.fit_transform(instructions)
 
-instructions = [item['instructions'] for item in content]
-tfidf_matrix = tfidf_vectorizer.fit_transform(instructions)
+    num_clusters = 100
 
+    km = KMeans(n_clusters=num_clusters)
 
-num_clusters = 100
+    km.fit_predict(tfidf_matrix)
 
-km = KMeans(n_clusters=num_clusters)
-
-km.fit_predict(tfidf_matrix)
-
-clusters = km.labels_.tolist()
+    clusters = km.labels_.tolist()
 
 
-print(tfidf_matrix.shape)
-print(tfidf_vectorizer.get_feature_names())
-print(len(clusters))
+    # print(tfidf_matrix.shape)
+    # print(tfidf_vectorizer.get_feature_names())
+    # print(len(clusters))
+    # print('\nNew recipe:'.join([item[0] for item in zip(instructions, clusters) if item[-1] == 15]))
 
-# print('\nNew recipe:'.join([item[0] for item in zip(instructions, clusters) if item[-1] == 15]))
+    for i in range(len(content)):
+        if content[i]["title"] == last_cooked:
+            index = i
+            break
 
-near = NearestNeighbors(n_neighbours=5, algorithm='ball_tree').fit(tfidf_matrix)
+    near = NearestNeighbors(n_neighbours=5, algorithm='ball_tree').fit(tfidf_matrix)
 
-dist, indices = near.kneighbors(tfidf_matrix[112])
-print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
+    dist, indices = near.kneighbors(tfidf_matrix[index])
+    title_result = [titles[index] for index in indices[0]]
+    instructions_result = [instructions[index] for index in indices[0]]
+    for i in range(len(title_result)):
+        if i != 0:
+            print("\nNew recipe: {}\n{}".format(title_result[i], instructions_result[i]))
+        else:
+            print("\nLast recipe: {}\n{}".format(title_result[i], instructions_result[i]))
+    # print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
+    # print(''.join([titles[index] for index in indices[0]]))
+# get_suggested("Гювеч с телешко и зеленчуци")
