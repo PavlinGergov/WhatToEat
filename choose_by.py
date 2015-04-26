@@ -10,7 +10,8 @@ def suggested_for_today():
 
 
 # We should have an option to buy the missing product/products using a drone!!
-# This should display some markets, delivery time, etc (this is about to be discussed)
+# This should display some markets, delivery time, etc
+# (this is about to be discussed)
 def buy_product():
     pass
 
@@ -27,7 +28,7 @@ def check_fridge():
         contents = f.read()
         lst = json.loads(contents)
         products = lst[0]
-    return products
+    return json.dumps(products, indent=True, ensure_ascii=False)
 
 
 # We are gona search the recipe database for an exact recipe
@@ -40,8 +41,10 @@ def find_recipe(name):
         recipes = json.loads(contents)
         for recipe in recipes:
             if name in recipe["name"]:
-                result.append(recipe)
-        return result
+                result.append(recipe["name"])
+                result.append(recipe["way_of_prepare"])
+        return json.dumps(result, indent=True, ensure_ascii=False)
+# print(find_recipe("Огретен с тиквички и сирене"))
 
 
 # returning a list of all recipes for wich we have sufficient products
@@ -70,7 +73,8 @@ def make_list_of_possible_recipes():
         if is_possible:
             possible_recipes.append(rec)
 
-    return possible_recipes
+    return json.dumps(possible_recipes, indent=True, ensure_ascii=False)
+# print(make_list_of_possible_recipes())
 
 
 # sorting the possible recipes by time
@@ -135,10 +139,12 @@ def get_recent_recipes():
     with open("user.json", "r") as f:
         contents = f.read()
         lst = json.loads(contents)
+        result = lst[1][0]["name"]
 
-    return lst[1]
+    return json.dumps(result, indent=True, ensure_ascii=False)
 
 
+# print(get_recent_recipes())
 # We are gona return the favourite (most cooked) recipes
 def get_favourite_recipes():
     with open("recipes.json", "r") as p:
@@ -151,7 +157,9 @@ def get_favourite_recipes():
         if most_cooked_recipe["times cooked"] <= recipe["times cooked"]:
             most_cooked_recipe = recipe
 
-    return most_cooked_recipe
+    return json.dumps(most_cooked_recipe["name"],
+                      indent=True, ensure_ascii=False)
+# print(get_favourite_recipes())
 
 
 # Show the ingredients(products) of the recipe
@@ -163,8 +171,10 @@ def is_available(product, quantity):
         lst = json.loads(contents)
 
     if product not in lst[0].keys():
-        return False
+        return json.dumps(False, indent=True)
     if quantity > lst[0][product]:
-        return False
+        return json.dumps(False, indent=True)
 
-    return True
+    return json.dumps(True, indent=True)
+
+# print(is_available("lemon", 2))
