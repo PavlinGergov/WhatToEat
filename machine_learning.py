@@ -88,10 +88,10 @@ def get_suggested(last_cooked):
     title_result = [titles[index] for index in indices[0]]
     instructions_result = [instructions[index] for index in indices[0]]
     data = {}
-    for i in range(len(title_result)):
+    for i in range(1, len(title_result)):
         data[i] = [title_result[i], instructions_result[i]]
     with open("suggested_recipe.json", 'w') as f:
         json.dump(data, f, indent=True, ensure_ascii=False)
     # print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
     # print(''.join([titles[index] for index in indices[0]]))
-# get_suggested("Панирано пилешко вретено със сусам")
+get_suggested("Панирано пилешко вретено със сусам")
