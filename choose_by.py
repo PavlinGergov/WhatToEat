@@ -74,7 +74,8 @@ def make_list_of_possible_recipes():
             possible_recipes.append(rec)
 
     return json.dumps(possible_recipes, indent=True, ensure_ascii=False)
-print(make_list_of_possible_recipes())
+# print(make_list_of_possible_recipes())
+
 
 # sorting the possible recipes by time
 def sort_by_time():
@@ -138,8 +139,9 @@ def get_recent_recipes():
     with open("user.json", "r") as f:
         contents = f.read()
         lst = json.loads(contents)
+        result = lst[1][0]["name"]
 
-    return json.dumps(lst[1], indent=True, ensure_ascii=False)
+    return json.dumps(result, indent=True, ensure_ascii=False)
 
 
 # print(get_recent_recipes())
