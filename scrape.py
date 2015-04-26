@@ -13,8 +13,8 @@ import time
 recipe_index = 1
 result = []
 
-for page in range(1, 194):
-    response = requests.get('http://www.1001recepti.com/recipes/show/by_type/?list_id=3-salati&page=' + str(page))
+for page in range(1, 195):
+    response = requests.get('http://www.1001recepti.com/s/204346-salati/' + str(page))
     response.encoding = 'windows-1251'
     # response.text -> za proverka samo :)
     # print(res.text) --> samo za info!
@@ -31,6 +31,9 @@ for page in range(1, 194):
         recipe_page_html.encoding = 'windows-1251'
         recipe_page = bs4.BeautifulSoup(recipe_page_html.text)
 
+        title = recipe_page.select('article h1')[0].text
+        current_recipe['title'] = title
+
         ingredients = recipe_page.select('.recipe_ingr')[0].text
         current_recipe['ingredients'] = ingredients.replace('\t', '').replace('\n' * 5, '\n').replace('\n\r\n', ' ').replace('\n\n\n\n', '').strip()
 
@@ -44,7 +47,7 @@ for page in range(1, 194):
         print('saved recipe ' + str(recipe_index))
         recipe_index += 1
 
-    time.sleep(5)
+    time.sleep(1)
 
     with open("salati-pages1-" + str(page) + ".json", "w") as current_file:
         json.dump(result, current_file, indent=True, ensure_ascii=False)

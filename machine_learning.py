@@ -9,6 +9,7 @@ from sklearn import feature_extraction
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn.neighbors import NearestNeighbors
 
 # import mpld3
 
@@ -79,4 +80,9 @@ print(tfidf_matrix.shape)
 print(tfidf_vectorizer.get_feature_names())
 print(len(clusters))
 
-print('\nNew recipe:'.join([item[0] for item in zip(instructions, clusters) if item[-1] == 15]))
+# print('\nNew recipe:'.join([item[0] for item in zip(instructions, clusters) if item[-1] == 15]))
+
+near = NearestNeighbors(n_neighbours=5, algorithm='ball_tree').fit(tfidf_matrix)
+
+dist, indices = near.kneighbors(tfidf_matrix[112])
+print('\nNew recipe'.join([instructions[index] for index in indices[0]]))
