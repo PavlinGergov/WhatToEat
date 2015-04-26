@@ -14,7 +14,7 @@ recipe_index = 1
 result = []
 
 for page in range(1, 194):
-    response = requests.get('http://www.1001recepti.com/s/195529-osnovni/' + str(page))
+    response = requests.get('http://www.1001recepti.com/recipes/show/by_type/?list_id=3-salati&page=' + str(page))
     response.encoding = 'windows-1251'
     # response.text -> za proverka samo :)
     # print(res.text) --> samo za info!
@@ -44,9 +44,9 @@ for page in range(1, 194):
         print('saved recipe ' + str(recipe_index))
         recipe_index += 1
 
-    time.sleep(10)
+    time.sleep(5)
 
-    with open("pages1-" + str(page) + ".json", "w") as current_file:
+    with open("salati-pages1-" + str(page) + ".json", "w") as current_file:
         json.dump(result, current_file, indent=True, ensure_ascii=False)
 
 
